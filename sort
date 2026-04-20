@@ -102,3 +102,133 @@ int main() {
     delete[] data;
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+//
+
+#include <iostream>
+#include <fstream>
+
+struct Data {
+    int key;
+    char data;
+};
+
+// Сортировка простыми включениями (устойчивая)
+void insertionSort(Data *arr, int length) {
+    Data current;
+    int j;
+    for (int i = 1; i < length; i++) {
+        current = arr[i];
+        j = i - 1;
+        while (j >= 0 && current.key < arr[j].key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = current;
+    }
+}
+
+// Сортировка простым выбором
+void selectionSort(Data *arr, int length) {
+    int i_min;
+    int min_key;
+    Data tmp;
+    for (int i = 0; i < length; i++) {
+        i_min = i;
+        min_key = arr[i].key;
+        for (int j = i + 1; j < length; j++) {
+            if (arr[j].key < min_key) {
+                i_min = j;
+                min_key = arr[j].key;
+            }
+        }
+        tmp = arr[i];
+        arr[i] = arr[i_min];
+        arr[i_min] = tmp;
+    }
+}
+
+// Сортировка пузырьком (устойчивая)
+void bubbleSort(Data *arr, int length) {
+    Data tmp;
+    for (int i = 1; i < length; i++) {
+        for (int j = length - 1; j >= i; j--) {
+            if (arr[j].key < arr[j - 1].key) {
+                tmp = arr[j];
+                arr[j] = arr[j - 1];
+                arr[j - 1] = tmp;
+            }
+        }
+    }
+}
+
+// Сортировка Шелла
+void shellSort(Data *arr, int length, int h_list[], int h_length) {
+    Data current;
+    int j;
+    for (int t = 0; t < h_length; t++) {
+        int h = h_list[t];
+        for (int i = h; i < length; i++) {
+            current = arr[i];
+            j = i - h;
+            while (j >= 0 && current.key < arr[j].key) {
+                arr[j + h] = arr[j];
+                j -= h;
+            }
+            arr[j + h] = current;
+        }
+    }
+}
+
+int main() {
+    std::ifstream fin("input.txt");
+    std::ofstream fout("output.txt");
+
+    if (!fin.is_open()) {
+        std::cout << "Ошибка открытия файла input.txt" << std::endl;
+        return 1;
+    }
+
+    int n;
+    fin >> n;
+
+    Data *data = new Data[n];
+
+    for (int i = 0; i < n; i++) {
+        fin >> data[i].data >> data[i].key;
+    }
+
+    fin.close();
+
+    // Раскомментируйте нужную сортировку:
+
+    insertionSort(data, n);
+    // selectionSort(data, n);
+    // bubbleSort(data, n);
+
+    // Для Шелла:
+    // int h_list[] = {5, 3, 1};
+    // int h_length = 3;
+    // shellSort(data, n, h_list, h_length);
+
+    for (int i = 0; i < n; i++) {
+        fout << data[i].data;
+        if (i != n - 1) fout << " ";
+    }
+    fout << std::endl;
+
+    fout.close();
+    delete[] data;
+
+    std::cout << "Результат записан в output.txt" << std::endl;
+    return 0;
+}
